@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 
 const CategoryBox = ({ label, icon: Icon }) => {
+  
   return (
     <div
       className={`flex 
