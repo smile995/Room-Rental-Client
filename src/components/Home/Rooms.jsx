@@ -5,13 +5,17 @@ import Heading from "../Shared/Heading";
 import LoadingSpinner from "../Shared/LoadingSpinner";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
+import { useSearchParams } from "react-router-dom";
 const Rooms = () => {
+// eslint-disable-next-line no-unused-vars
+const [params,setParams]= useSearchParams();
+const category= params.get("category")
 
   const axiosPublc= useAxiosPublic();
   const { data: rooms = [], isLoading: loading } = useQuery({
-    queryKey: ["rooms"],
+    queryKey: ["rooms",category],
     queryFn: async () => {
-      const { data } = await axiosPublc.get("/rooms");
+      const { data } = await axiosPublc.get(`/rooms?category=${category}`);
       return data;
     },
   });
