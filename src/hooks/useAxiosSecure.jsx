@@ -1,10 +1,11 @@
 import axios from "axios";
 import { useEffect } from "react";
-import useAuth from "./useAuth";
+// import useAuth from "./useAuth";
 import { useNavigate } from "react-router-dom";
+import useAuth from "./useAuth";
 
 export const axiosSecure = axios.create({
-  baseURL: "http://localhost:5000",
+  baseURL: import.meta.env.ROOT,
   withCredentials: true,
 });
 const useAxiosSecure = () => {
