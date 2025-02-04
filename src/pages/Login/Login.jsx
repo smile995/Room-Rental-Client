@@ -8,20 +8,31 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state || "/";
-  const { signIn, loading, setLoading, signInWithGoogle } = useAuth();
+  const { signIn, loading, setLoading, signInWithGoogle, resetPassword } =
+    useAuth();
   const handleLogin = (event) => {
     event.preventDefault();
     setLoading(true);
     const form = event.target;
     const email = form.email.value;
     const password = form.password.value;
-    signIn(email, password).then((res) => {
-      if (res?.user?.email) {
-        toast.success("Login successfull");
-        form.reset();
-        navigate(from);
-      }
-    });
+    try{
+      signIn(email, password)
+      .then((res) => {
+        if (res?.user?.email) {
+          toast.success("Login successfull");
+          form.reset();
+          navigate(from);
+        }
+      })
+      .catch(error=>{
+        setLoading(false)
+        toast.error(error.message)
+      })
+    }catch(error){
+      setLoading(false)
+      toast.error(error.message)
+    }
   };
   const signinWithGoogle = () => {
     setLoading(true);
@@ -31,6 +42,15 @@ const Login = () => {
         toast.success("You are logged in ");
         navigate(from);
       }
+    });
+  };
+
+  const handlePasswordReset = (e) => {
+    e.preventDefault();
+    const email = e.target.email.value;
+    resetPassword(email).then(() => {
+      toast.success("Check your email")
+      document.getElementById("my_modal_1").close();
     });
   };
   return (
@@ -81,7 +101,7 @@ const Login = () => {
 
           <div>
             <button
-            disabled={loading}
+              disabled={loading}
               type="submit"
               className="bg-rose-500 w-full rounded-md py-3 text-white disabled:cursor-not-allowed cursor-pointer"
             >
@@ -94,9 +114,38 @@ const Login = () => {
           </div>
         </form>
         <div className="space-y-1">
-          <button className="text-xs hover:underline hover:text-rose-500 text-gray-400">
+          <button
+            className="text-xs hover:underline hover:text-rose-500 text-gray-400"
+            onClick={() => document.getElementById("my_modal_1").showModal()}
+          >
             Forgot password?
           </button>
+          <dialog id="my_modal_1" className="modal">
+            <div className="modal-box">
+              <h3 className="font-bold text-lg">
+                Password Reset Form (Checked your Email)
+              </h3>
+              <form onSubmit={handlePasswordReset}>
+                <label className="form-control w-full ">
+                  <div className="label">
+                    <span className="label-text">Email*</span>
+                  </div>
+                  <input
+                    type="email"
+                    name="email"
+                    required
+                    placeholder="example@gmail.com"
+                    className="input input-bordered w-full "
+                  />
+                </label>
+                <div className="flex justify-center mt-5">
+                  <button type="submit" className="btn btn-success">
+                    Submit
+                  </button>
+                </div>
+              </form>
+            </div>
+          </dialog>
         </div>
         <div className="flex items-center pt-4 space-x-1">
           <div className="flex-1 h-px sm:w-16 dark:bg-gray-700"></div>
@@ -106,7 +155,7 @@ const Login = () => {
           <div className="flex-1 h-px sm:w-16 dark:bg-gray-700"></div>
         </div>
         <button
-        disabled={loading}
+          disabled={loading}
           onClick={signinWithGoogle}
           className="disabled:cursor-not-allowed flex justify-center items-center space-x-2 border m-3 p-2 border-gray-300 border-rounded cursor-pointer"
         >
