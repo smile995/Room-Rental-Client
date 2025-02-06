@@ -1,8 +1,12 @@
 import { DateRange } from "react-date-range";
 import { categories } from "../../../components/Categories/CategoriesData";
 import { useState } from "react";
+import useAuth from "../../../hooks/useAuth";
+import UploadImage from "../../../Utils/UploadImage";
 
 const AddRoom = () => {
+  const { user } = useAuth();
+  const [preview, setPreview] = useState();
   const [state, setState] = useState([
     {
       startDate: new Date(),
@@ -10,11 +14,54 @@ const AddRoom = () => {
       key: "selection",
     },
   ]);
-  console.log(state);
-  
+  function handleChange(e) {
+    setPreview(URL.createObjectURL(e.target.files[0]));
+  }
+  const handleAddRoomDetails = async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const location = form.location.value;
+    const title = form.title.value;
+    const price = form.price.value;
+    const category = form.category.value;
+    const bathrooms = form.bathrooms.value;
+    const bedrooms = form.bedrooms.value;
+    const description = form.description.value;
+    const guests = form.total_guest.value;
+    const to = state[0].endDate;
+    const from = state[0].startDate;
+    const imageFile = form.image.files[0];
+    const host = {
+      name: user?.displayName,
+      image: user?.photoURL,
+      email: user?.email,
+    };
+
+    try {
+      const image = await UploadImage(imageFile);
+      const RoomInfo = {
+        location,
+        title,
+        price,
+        bedrooms,
+        category,
+        bathrooms,
+        description,
+        guests,
+        to,
+        from,
+        host,
+        image,
+      };
+      console.table(RoomInfo);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="w-full min-h-[calc(100vh-40px)] flex flex-col justify-center items-center text-gray-800 rounded-xl bg-gray-50">
-      <form>
+      <form onSubmit={handleAddRoomDetails}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           <div className="space-y-6">
             <div className="space-y-1 text-sm">
@@ -53,7 +100,7 @@ const AddRoom = () => {
                 Select Availability Range
               </label>
               <DateRange
-              rangeColors={['#f5405e']}
+                rangeColors={["#f5405e"]}
                 editableDateInputs={true}
                 onChange={(item) => setState([item.selection])}
                 moveRangeOnFirstSelection={false}
@@ -78,18 +125,26 @@ const AddRoom = () => {
 
             <div className=" p-4 bg-white w-full  m-auto rounded-lg">
               <div className="file_upload px-5 py-3 relative border-4 border-dotted border-gray-300 rounded-lg">
-                <div className="flex flex-col w-max mx-auto text-center">
+                <div className="text-center">
                   <label>
                     <input
                       className="text-sm cursor-pointer w-36 hidden"
                       type="file"
                       name="image"
+                      onChange={handleChange}
                       id="image"
                       accept="image/*"
                       hidden
                     />
-                    <div className="bg-rose-500 text-white border border-gray-300 rounded font-semibold cursor-pointer p-1 px-3 hover:bg-rose-500">
-                      Upload Image
+                    <div className="flex justify-center gap-5 items-center">
+                      <div className="bg-rose-500 text-white border border-gray-300 rounded font-semibold cursor-pointer p-1 px-3 hover:bg-rose-500">
+                        Upload Image
+                      </div>
+                      <div>
+                        {preview && (
+                          <img className="w-16 h-1w-16" src={preview} />
+                        )}
+                      </div>
                     </div>
                   </label>
                 </div>
