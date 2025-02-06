@@ -3,9 +3,11 @@ import { categories } from "../../../components/Categories/CategoriesData";
 import { useState } from "react";
 import useAuth from "../../../hooks/useAuth";
 import UploadImage from "../../../Utils/UploadImage";
-
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import { useMutation } from "@tanstack/react-query";
 const AddRoom = () => {
   const { user } = useAuth();
+  const axiosSecure = useAxiosSecure();
   const [preview, setPreview] = useState();
   const [state, setState] = useState([
     {
@@ -14,9 +16,21 @@ const AddRoom = () => {
       key: "selection",
     },
   ]);
-  function handleChange(e) {
+  const handleChange = (e) => {
     setPreview(URL.createObjectURL(e.target.files[0]));
-  }
+  };
+  // const { mutateAsync } = useMutation({
+  //   mutationFn: async (room) => {
+  //     const result = await axiosSecure.post("/rooms", room);
+  //     return result.data;
+  //   },
+  //   onSuccess: () => {
+  //     console.log("something going well");
+  //   },
+  //   onError: (error) => {
+  //     console.error(error.message);
+  //   },
+  // });
   const handleAddRoomDetails = async (e) => {
     e.preventDefault();
     const form = e.target;
@@ -53,8 +67,12 @@ const AddRoom = () => {
         host,
         image,
       };
-      console.table(RoomInfo);
+      console.log(RoomInfo);
+
+      const { data } = await axiosSecure.post("/rooms", RoomInfo);
+      console.log(data);
     } catch (error) {
+      // toast.error(error.message)
       console.log(error);
     }
   };
