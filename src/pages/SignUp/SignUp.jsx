@@ -5,6 +5,7 @@ import axios from "axios";
 import useAuth from "../../hooks/useAuth";
 import toast from "react-hot-toast";
 import { ImSpinner3 } from "react-icons/im";
+import UploadImage from "../../Utils/UploadImage";
 
 const SignUp = () => {
   const {
@@ -26,16 +27,10 @@ const SignUp = () => {
     const email = form.email.value;
     const password = form.password.value;
     const imageFile = form.image.files[0];
-    const formData = new FormData();
-    formData.append("image", imageFile);
+
     try {
-      const { data } = await axios.post(
-        `https://api.imgbb.com/1/upload?key=${
-          import.meta.env.VITE_IMGBB_API_KEY
-        }`,
-        formData
-      );
-      const imageUrl = data?.data?.display_url;
+   
+      const imageUrl = await UploadImage(imageFile)
       createUser(email, password).then((res) => {
         if (res?.user?.email) {
           updateUserProfile(name, imageUrl).then(() => {
