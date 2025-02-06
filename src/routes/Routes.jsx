@@ -30,29 +30,28 @@ export const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
+    ],
+  },
+  {
+    path: "/dashboard",
+    element: <Dashboard />,
+    children: [
       {
-        path: "/dashboard",
-        element: <Dashboard />,
-        children: [
-          {
-            index: true,
-            
-            // path: "statistics",
-            element: <Statistic />,
-          },
-          {
-            path: "add-room",
-            element: <AddRoom />,
-          },
-          {
-            path: "my-listings",
-            element: <MyListings />,
-          },
-        ],
+        index: true,
+
+        // path: "statistics",
+        element: <Statistic />,
+      },
+      {
+        path: "add-room",
+        element: <AddRoom />,
+      },
+      {
+        path: "my-listings",
+        element: <MyListings />,
       },
     ],
   },
-
   { path: "/login", element: <Login /> },
   { path: "/signup", element: <SignUp /> },
 ]);
