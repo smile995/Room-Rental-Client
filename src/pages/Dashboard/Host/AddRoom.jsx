@@ -5,7 +5,13 @@ import useAuth from "../../../hooks/useAuth";
 import UploadImage from "../../../Utils/UploadImage";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import { useMutation } from "@tanstack/react-query";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { ImSpinner3 } from "react-icons/im";
 const AddRoom = () => {
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
   const [preview, setPreview] = useState();
@@ -19,19 +25,23 @@ const AddRoom = () => {
   const handleChange = (e) => {
     setPreview(URL.createObjectURL(e.target.files[0]));
   };
-  // const { mutateAsync } = useMutation({
-  //   mutationFn: async (room) => {
-  //     const result = await axiosSecure.post("/rooms", room);
-  //     return result.data;
-  //   },
-  //   onSuccess: () => {
-  //     console.log("something going well");
-  //   },
-  //   onError: (error) => {
-  //     console.error(error.message);
-  //   },
-  // });
+  const { mutateAsync } = useMutation({
+    mutationFn: async (room) => {
+      const result = await axiosSecure.post("/rooms", room);
+      return result.data;
+    },
+    onSuccess: () => {
+      toast.success("Room Added successfully");
+      navigate("/dashboard/my-listings");
+      setLoading(false);
+    },
+    onError: (error) => {
+      toast.error(error.message);
+      setLoading(false);
+    },
+  });
   const handleAddRoomDetails = async (e) => {
+    setLoading(true);
     e.preventDefault();
     const form = e.target;
     const location = form.location.value;
@@ -67,12 +77,10 @@ const AddRoom = () => {
         host,
         image,
       };
-      console.log(RoomInfo);
-
-      const { data } = await axiosSecure.post("/rooms", RoomInfo);
-      console.log(data);
+      await mutateAsync(RoomInfo);
     } catch (error) {
       // toast.error(error.message)
+      setLoading(false);
       console.log(error);
     }
   };
@@ -242,11 +250,22 @@ const AddRoom = () => {
           </div>
         </div>
 
-        <button
+        {/* <button
           type="submit"
           className="w-full p-3 mt-5 text-center font-medium text-white transition duration-200 rounded shadow-md bg-rose-500"
         >
           Save & Continue
+        </button> */}
+        <button
+          disabled={loading}
+          type="submit"
+          className="bg-rose-500 w-full rounded-md py-3 text-white disabled:cursor-not-allowed cursor-pointer mt-5"
+        >
+          {loading ? (
+            <ImSpinner3 className="animate-spin mx-auto" />
+          ) : (
+            "Save & Continue"
+          )}
         </button>
       </form>
     </div>
