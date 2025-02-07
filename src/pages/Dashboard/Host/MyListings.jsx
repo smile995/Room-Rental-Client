@@ -5,7 +5,7 @@ import { Helmet } from "react-helmet-async";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import { useQuery } from "@tanstack/react-query";
 import useAuth from "../../../hooks/useAuth";
-
+import Swal from "sweetalert2";
 const MyListings = () => {
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
@@ -17,7 +17,27 @@ const MyListings = () => {
     },
   });
   const handleDeleteRoom = (id) => {
-    console.log(id);
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const { data } = await axiosSecure.delete(`/rooms/${id}`); 
+        if (data?.deletedCount > 0) {
+          refetch();
+          Swal.fire({
+            title: "Deleted!",
+            text: "Your file has been deleted.",
+            icon: "success",
+          });
+        }
+      }
+    });
   };
   return (
     <>
@@ -124,7 +144,12 @@ const MyListings = () => {
                             className="absolute inset-0 bg-red-200 opacity-50 rounded-full"
                           ></span>
 
-                          <button onClick={()=>handleDeleteRoom(data._id)} className="relative">Delete</button>
+                          <button
+                            onClick={() => handleDeleteRoom(data._id)}
+                            className="relative"
+                          >
+                            Delete
+                          </button>
                         </span>
                       </td>
                       <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
