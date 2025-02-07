@@ -249,13 +249,6 @@ const AddRoom = () => {
             </div>
           </div>
         </div>
-
-        {/* <button
-          type="submit"
-          className="w-full p-3 mt-5 text-center font-medium text-white transition duration-200 rounded shadow-md bg-rose-500"
-        >
-          Save & Continue
-        </button> */}
         <button
           disabled={loading}
           type="submit"
