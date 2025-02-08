@@ -2,11 +2,16 @@ import PropTypes from "prop-types";
 import Button from "../Shared/Button/Button";
 import { useState } from "react";
 import { DateRange } from "react-date-range";
+import { differenceInDays } from "date-fns";
 
 const RoomReservation = ({ room }) => {
-  const {from,to}=room;
-  console.log(from,to);
-  
+  const { from, to } = room;
+  const startDate = new Date(from);
+  const endDate = new Date(to);
+  const daysBetween = differenceInDays(endDate, startDate);
+
+  const totalPrice = daysBetween * parseInt(room?.price);
+
   const [state, setState] = useState([
     {
       startDate: new Date(from),
@@ -23,14 +28,18 @@ const RoomReservation = ({ room }) => {
       <hr />
       <div className="flex justify-center">
         <DateRange
-        rangeColors={["#f5405e"]}
-        showDateDisplay={false}
+          rangeColors={["#f5405e"]}
+          showDateDisplay={false}
           editableDateInputs={true}
-          onChange={() => setState([  {
-            startDate: new Date(from),
-            endDate: new Date(to),
-            key: "selection",
-          }])}
+          onChange={() =>
+            setState([
+              {
+                startDate: new Date(from),
+                endDate: new Date(to),
+                key: "selection",
+              },
+            ])
+          }
           moveRangeOnFirstSelection={false}
           ranges={state}
         />
@@ -42,7 +51,7 @@ const RoomReservation = ({ room }) => {
       <hr />
       <div className="p-4 flex items-center justify-between font-semibold text-lg">
         <div>Total</div>
-        <div>${room?.price}</div>
+        <div>${totalPrice}</div>
       </div>
     </div>
   );
