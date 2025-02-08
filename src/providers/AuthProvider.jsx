@@ -13,6 +13,7 @@ import {
 
 import axios from "axios";
 import auth from "../firebase/firebase.config";
+import useAxiosPublic from "../hooks/useAxiosPublic";
 export const AuthContext = createContext(null);
 
 const googleProvider = new GoogleAuthProvider();
@@ -20,7 +21,7 @@ const googleProvider = new GoogleAuthProvider();
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const axiosPublic = useAxiosPublic();
   const createUser = (email, password) => {
     setLoading(true);
     return createUserWithEmailAndPassword(auth, email, password);
@@ -64,12 +65,26 @@ const AuthProvider = ({ children }) => {
     );
     return data;
   };
-
+  // create and update user in database
+  const createAndUpdateUser = async (user) => {
+    const userInfo = {
+      name: user?.displayName,
+      email: user?.email,
+      role: "guest",
+      image: user?.photoURL,
+      timeStamp:  Date.now(),
+      status: "varified",
+    };
+    const { data } = await axiosPublic.put("/users", userInfo);
+    console.log(data);
+  };
   // onAuthStateChange
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
+        createAndUpdateUser(currentUser);
+
         getToken(currentUser.email);
       }
       setLoading(false);

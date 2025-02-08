@@ -6,6 +6,7 @@ import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import { useQuery } from "@tanstack/react-query";
 import useAuth from "../../../hooks/useAuth";
 import Swal from "sweetalert2";
+import EmptyState from "../../../components/Shared/EmptyState";
 const MyListings = () => {
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
@@ -16,6 +17,9 @@ const MyListings = () => {
       return data;
     },
   });
+  if(datas?.length===0){
+    return <EmptyState message={"Your have no room"} address="/dashboard/add-room" label={"Add Room"} />
+  }
   const handleDeleteRoom = (id) => {
     Swal.fire({
       title: "Are you sure?",

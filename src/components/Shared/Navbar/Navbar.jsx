@@ -4,10 +4,50 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import useAuth from "../../../hooks/useAuth";
 import avatarImg from "../../../assets/images/placeholder.jpg";
+import Swal from "sweetalert2";
+import useAxiosPublic from "../../../hooks/useAxiosPublic";
 
 const Navbar = () => {
+  const axiosPublc = useAxiosPublic();
   const { user, logOut } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const handleBeAHost = () => {
+    const userInfo = {
+      name: user?.displayName,
+      email: user?.email,
+      role: "guest",
+      image: user?.photoURL,
+      timeStamp: Date.now(),
+      status: "Requested",
+    };
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to a host?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Request",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const { data } = await axiosPublc.put("/users", userInfo);
+        if (data?.modifiedCount > 0) {
+          Swal.fire({
+            title: "Request success",
+            text: "Please wait for admin approval",
+            icon: "success",
+          });
+        } else {
+          Swal.fire({
+            title: "Request on pending",
+            text: "Please wait for admin approval",
+            icon: "warning",
+          });
+        }
+      }
+    });
+  };
 
   return (
     <div className="fixed w-full bg-white z-10 shadow-sm">
@@ -29,12 +69,13 @@ const Navbar = () => {
               <div className="flex flex-row items-center gap-3">
                 {/* Become A Host btn */}
                 <div className="hidden md:block">
-                  {!user && (
+                  {user && (
                     <button
                       disabled={!user}
+                      onClick={handleBeAHost}
                       className="disabled:cursor-not-allowed cursor-pointer hover:bg-neutral-100 py-3 px-4 text-sm font-semibold rounded-full  transition"
                     >
-                      Host your home
+                      Become A Host
                     </button>
                   )}
                 </div>
@@ -70,9 +111,7 @@ const Navbar = () => {
                     {user ? (
                       <>
                         <Link to={"/dashboard"}>
-                          <div
-                            className="px-4 py-3 hover:bg-neutral-100 transition font-semibold cursor-pointer"
-                          >
+                          <div className="px-4 py-3 hover:bg-neutral-100 transition font-semibold cursor-pointer">
                             Dashboard
                           </div>
                         </Link>
