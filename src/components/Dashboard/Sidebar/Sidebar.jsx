@@ -88,29 +88,30 @@ const Sidebar = () => {
               {role === "admin" && (
                 <>
                   <MenuItem
-                    icon={GrUserAdmin}
-                    text="Manage Users"
-                    to="manage-users"
-                  />
-                  <MenuItem
                     icon={BsGraphUp}
                     text="Statistics"
                     to="/dashboard"
+                  />
+                  <MenuItem
+                    icon={GrUserAdmin}
+                    text="Manage Users"
+                    to="manage-users"
                   />
                 </>
               )}
               {role === "host" && (
                 <>
                   <MenuItem
-                    icon={BsFillHouseAddFill}
-                    text="Add Room"
-                    to="add-room"
-                  />
-                  <MenuItem
                     icon={BsGraphUp}
                     text="Statistics"
                     to="/dashboard"
                   />
+                  <MenuItem
+                    icon={BsFillHouseAddFill}
+                    text="Add Room"
+                    to="add-room"
+                  />
+
                   <MenuItem
                     icon={MdHomeWork}
                     text="My Listings"
