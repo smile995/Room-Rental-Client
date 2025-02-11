@@ -72,20 +72,20 @@ const AuthProvider = ({ children }) => {
       email: user?.email,
       role: "guest",
       image: user?.photoURL,
-      timeStamp:  Date.now(),
+      timeStamp: Date.now(),
       status: "varified",
     };
-    const { data } = await axiosPublic.put("/users", userInfo);
-    console.log(data);
+
+    await axiosPublic.put("/users", userInfo);
   };
   // onAuthStateChange
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
+
       if (currentUser) {
         createAndUpdateUser(currentUser);
-
-        getToken(currentUser.email);
+        getToken(currentUser?.email);
       }
       setLoading(false);
     });

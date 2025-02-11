@@ -1,9 +1,12 @@
 import { Helmet } from "react-helmet-async";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import { useQuery } from "@tanstack/react-query";
+import useRole from "../../../hooks/useRole";
 
 const ManageUser = () => {
   const axiosSecure = useAxiosSecure();
+  const [role] = useRole();
+
   const { data: users = [], refetch } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
@@ -11,7 +14,9 @@ const ManageUser = () => {
       return data;
     },
   });
-
+  const handleUserRole = (curentUser) => {
+    console.log(curentUser);
+  };
   return (
     <>
       <div className="container mx-auto px-4 sm:px-8">
@@ -82,14 +87,20 @@ const ManageUser = () => {
                         )}
                       </td>
 
-                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                        <span className="relative cursor-pointer inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
-                          <span
-                            aria-hidden="true"
-                            className="absolute inset-0 bg-green-200 opacity-50 rounded-full"
-                          ></span>
-                          <span className="relative">Update Role</span>
-                        </span>
+                      <td className="px-5 py-5 border-b border-gray-200  text-sm">
+                        <button
+                          disabled={user?.role === "admin"}
+                          onClick={() => handleUserRole(user)}
+                          className={`relative inline-block px-3 py-1 font-semibold leading-tight rounded-full 
+                                  ${
+                                    user?.role === "admin"
+                                      ? "bg-red-500 text-white opacity-50 cursor-not-allowed"
+                                      : "bg-green-200 text-green-900"
+                                  }`}
+                        >
+                          Update Role
+                        </button>
+
                         {/* Update User Modal */}
                       </td>
                     </tr>
