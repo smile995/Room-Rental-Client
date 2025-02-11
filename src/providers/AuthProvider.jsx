@@ -73,7 +73,7 @@ const AuthProvider = ({ children }) => {
       role: "guest",
       image: user?.photoURL,
       timeStamp: Date.now(),
-      status: "varified",
+      status: "verified",
     };
 
     await axiosPublic.put("/users", userInfo);

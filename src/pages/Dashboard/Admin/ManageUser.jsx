@@ -1,11 +1,10 @@
 import { Helmet } from "react-helmet-async";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import { useQuery } from "@tanstack/react-query";
-import useRole from "../../../hooks/useRole";
+
 
 const ManageUser = () => {
   const axiosSecure = useAxiosSecure();
-  const [role] = useRole();
 
   const { data: users = [], refetch } = useQuery({
     queryKey: ["users"],
@@ -65,7 +64,7 @@ const ManageUser = () => {
                         </p>
                       </td>
                       <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                        <p className="text-gray-900 whitespace-no-wrap">
+                        <p className="text-gray-900 whitespace-no-wrap capitalize">
                           {user?.role}
                         </p>
                       </td>
@@ -73,9 +72,9 @@ const ManageUser = () => {
                         {user?.status ? (
                           <p
                             className={`${
-                              user.status === "Verified"
-                                ? "text-green-500"
-                                : "text-yellow-500"
+                              user.status === "verified"
+                                ? "text-green-500 capitalize "
+                                : "text-yellow-500 capitalize"
                             } whitespace-no-wrap`}
                           >
                             {user.status}
