@@ -3,12 +3,11 @@ import PropTypes from "prop-types";
 import { useState } from "react";
 import { axiosSecure } from "../../../../hooks/useAxiosSecure";
 import toast from "react-hot-toast";
+import UpdateUserModal from "./UpdateUserModal";
 const UserDataRow = ({ user = {}, refetch }) => {
-  const [newRole, setNewRole] = useState("guest");
-console.log(user.email);
-
+  const [isOpen, setIsOpen] = useState(false);
   const { mutateAsync } = useMutation({
-    mutationKey: [newRole, user?.email],
+    mutationKey: ["role"],
     mutationFn: async (role) => {
       const { data } = await axiosSecure.patch(
         `/users/update-role/${user?.email}`,
@@ -24,15 +23,8 @@ console.log(user.email);
       toast.error(error.message);
     },
   });
-  const handleUserRole = async (e,user) => {
-    e.preventDefault();
-    console.log(newRole);
-    console.log(user.email);
-    
-    // const updatedRole=await mutateAsync(newRole );
-    // console.log(updatedRole);
-    
-    document.getElementById("my_modal_1").close();
+  const modalHandler = async (selected) => {
+    console.log("clicking",selected);
   };
 
   return (
@@ -59,47 +51,22 @@ console.log(user.email);
 
       <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
         <button
-          disabled={user?.role === "admin"}
-          className={`relative inline-block px-3 py-1 font-semibold leading-tight rounded-full 
-                       ${
-                         user?.role === "admin"
-                           ? "bg-red-500 text-white opacity-50 cursor-not-allowed"
-                           : "bg-green-200 text-green-900"
-                       }`}
-          onClick={() => {
-            document.getElementById("my_modal_1").showModal();
-          }}
+          onClick={() => setIsOpen(true)}
+          className="relative cursor-pointer inline-block px-3 py-1 font-semibold text-green-900 leading-tight"
         >
-          Update Role
+          <span
+            aria-hidden="true"
+            className="absolute inset-0 bg-green-200 opacity-50 rounded-full"
+          ></span>
+          <span className="relative">Update Role</span>
         </button>
-        <dialog id="my_modal_1" className="modal">
-          <div className="modal-box">
-            <h3 className="font-bold text-lg">Select user role</h3>
-            <form onSubmit={()=>handleUserRole(user)}>
-              <label className="form-control w-full ">
-                <div className="label">
-                  <span className="label-text"> Role*</span>
-                </div>
-                <select
-                  defaultValue={newRole}
-                  onChange={(e) => setNewRole(e.target.value)}
-                  className="select select-ghost w-full "
-                >
-                  <option value={"guest"}>Guest</option>
-                  {/* <option value={"guest"}>Guest</option> */}
-                  <option value={"host"}>Host</option>
-                  <option value={"admin"}>Admin</option>
-                </select>
-              </label>
-              <div className="flex justify-center mt-5">
-                <button type="submit" className="btn btn-success">
-                  UPdate Role
-                </button>
-              </div>
-            </form>
-          </div>
-        </dialog>
         {/* Update User Modal */}
+        <UpdateUserModal
+          user={user}
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          modalHandler={modalHandler}
+        />
       </td>
     </tr>
   );
