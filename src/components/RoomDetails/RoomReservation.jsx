@@ -1,17 +1,22 @@
 import PropTypes from "prop-types";
 import Button from "../Shared/Button/Button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DateRange } from "react-date-range";
 import { differenceInDays } from "date-fns";
+import BookingModal from "./BookingModal";
 
 const RoomReservation = ({ room }) => {
-  const { from, to } = room;
+  const { from, to } = room || {};
   const startDate = new Date(from);
   const endDate = new Date(to);
   const daysBetween = differenceInDays(endDate, startDate);
 
   const totalPrice = daysBetween * parseInt(room?.price);
 
+  const [isOpen, setOpen] = useState(false);
+  const closeModal = () => {
+    setOpen(false);
+  };
   const [state, setState] = useState([
     {
       startDate: new Date(from),
@@ -19,6 +24,17 @@ const RoomReservation = ({ room }) => {
       key: "selection",
     },
   ]);
+  useEffect(() => {
+    if (from && to) {
+      setState([
+        {
+          startDate: new Date(from),
+          endDate: new Date(to),
+          key: "selection",
+        },
+      ]);
+    }
+  }, [from, to]);
   return (
     <div className="rounded-xl border-[1px] border-neutral-200 overflow-hidden bg-white">
       <div className="flex items-center gap-1 p-4">
@@ -46,8 +62,11 @@ const RoomReservation = ({ room }) => {
       </div>
       <hr />
       <div className="p-4">
-        <Button label={"Reserve"} />
+        <Button 
+        onClick={()=>setOpen(true)}
+        label={"Reserve"} />
       </div>
+      <BookingModal isOpen={isOpen} closeModal={closeModal} bookingInfo={room} />
       <hr />
       <div className="p-4 flex items-center justify-between font-semibold text-lg">
         <div>Total</div>

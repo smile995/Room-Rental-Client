@@ -16,10 +16,10 @@ import useRole from "../../../hooks/useRole";
 import ToggleBtn from "../../../pages/Dashboard/Admin/Component/ToggleBtn";
 
 const Sidebar = () => {
-  const { logOut } = useAuth();
+  const { logOut,user } = useAuth();
   const [isActive, setActive] = useState(false);
   const [role] = useRole();
-  console.log(isActive);
+
 
   // Sidebar Responsive Handler
   const handleToggle = () => {
@@ -85,6 +85,7 @@ const Sidebar = () => {
                     text="Statistics"
                     to="/dashboard"
                   />
+               <h1>become a host</h1>
                 </>
               )}
               {role === "host" ? (
