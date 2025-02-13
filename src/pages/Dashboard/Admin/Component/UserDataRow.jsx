@@ -4,27 +4,36 @@ import { useState } from "react";
 import { axiosSecure } from "../../../../hooks/useAxiosSecure";
 import toast from "react-hot-toast";
 import UpdateUserModal from "./UpdateUserModal";
+
 const UserDataRow = ({ user = {}, refetch }) => {
   const [isOpen, setIsOpen] = useState(false);
+ 
   const { mutateAsync } = useMutation({
-    mutationKey: ["role"],
-    mutationFn: async (role) => {
+    mutationKey: ["role",user?.email],
+    mutationFn: async (currentUser) => {
       const { data } = await axiosSecure.patch(
         `/users/update-role/${user?.email}`,
-        role
+        currentUser,
+        
       );
       return data;
     },
     onSuccess: () => {
       refetch();
       toast.success("User role updated successfully");
+      setIsOpen(false)
     },
     onError: (error) => {
       toast.error(error.message);
+      setIsOpen(false)
     },
   });
   const modalHandler = async (selected) => {
-    console.log("clicking",selected);
+    const user={
+      role:selected,
+    }
+    await mutateAsync(user)
+    
   };
 
   return (
@@ -52,7 +61,8 @@ const UserDataRow = ({ user = {}, refetch }) => {
       <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
         <button
           onClick={() => setIsOpen(true)}
-          className="relative cursor-pointer inline-block px-3 py-1 font-semibold text-green-900 leading-tight"
+          disabled={user.role==="admin"}
+          className="relative cursor-pointer disabled:cursor-not-allowed inline-block px-3 py-1 font-semibold text-green-900 leading-tight"
         >
           <span
             aria-hidden="true"
