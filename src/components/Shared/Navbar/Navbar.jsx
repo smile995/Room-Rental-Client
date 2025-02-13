@@ -6,10 +6,12 @@ import useAuth from "../../../hooks/useAuth";
 import avatarImg from "../../../assets/images/placeholder.jpg";
 import Swal from "sweetalert2";
 import useAxiosPublic from "../../../hooks/useAxiosPublic";
+import useRole from "../../../hooks/useRole";
 
 const Navbar = () => {
   const axiosPublc = useAxiosPublic();
   const { user, logOut } = useAuth();
+  const [role]=useRole();
   const [isOpen, setIsOpen] = useState(false);
   const handleBeAHost = () => {
     const userInfo = {
@@ -69,7 +71,7 @@ const Navbar = () => {
               <div className="flex flex-row items-center gap-3">
                 {/* Become A Host btn */}
                 <div className="hidden md:block">
-                  {user && (
+                  {user && role==="guest"&& (
                     <button
                       disabled={!user}
                       onClick={handleBeAHost}

@@ -13,11 +13,13 @@ import useAuth from "../../../hooks/useAuth";
 import { Link } from "react-router-dom";
 import MenuItem from "../../Shared/Navlink/MenuItem";
 import useRole from "../../../hooks/useRole";
+import ToggleBtn from "../../../pages/Dashboard/Admin/Component/ToggleBtn";
 
 const Sidebar = () => {
   const { logOut } = useAuth();
   const [isActive, setActive] = useState(false);
   const [role] = useRole();
+  console.log(isActive);
 
   // Sidebar Responsive Handler
   const handleToggle = () => {
@@ -73,7 +75,7 @@ const Sidebar = () => {
           {/* Nav Items */}
           <div className="flex flex-col justify-between flex-1 mt-6">
             {/* Conditional toggle button here.. */}
-
+            <ToggleBtn toggleHandler={handleToggle} />
             {/*  Menu Items */}
             <nav>
               {role === "guest" && (
@@ -84,6 +86,36 @@ const Sidebar = () => {
                     to="/dashboard"
                   />
                 </>
+              )}
+              {role === "host" ? (
+                isActive ? (
+                  <>
+                    <MenuItem
+                      icon={BsGraphUp}
+                      text="Statistics"
+                      to="/dashboard"
+                    />
+                    <MenuItem
+                      icon={BsFillHouseAddFill}
+                      text="Add Room"
+                      to="add-room"
+                    />
+
+                    <MenuItem
+                      icon={MdHomeWork}
+                      text="My Listings"
+                      to="my-listings"
+                    />
+                  </>
+                ) : (
+                  <MenuItem
+                    icon={BsGraphUp}
+                    text="Statistics"
+                    to="/dashboard"
+                  />
+                )
+              ) : (
+                ""
               )}
               {role === "admin" && (
                 <>
@@ -96,26 +128,6 @@ const Sidebar = () => {
                     icon={GrUserAdmin}
                     text="Manage Users"
                     to="manage-users"
-                  />
-                </>
-              )}
-              {role === "host" && (
-                <>
-                  <MenuItem
-                    icon={BsGraphUp}
-                    text="Statistics"
-                    to="/dashboard"
-                  />
-                  <MenuItem
-                    icon={BsFillHouseAddFill}
-                    text="Add Room"
-                    to="add-room"
-                  />
-
-                  <MenuItem
-                    icon={MdHomeWork}
-                    text="My Listings"
-                    to="my-listings"
                   />
                 </>
               )}
