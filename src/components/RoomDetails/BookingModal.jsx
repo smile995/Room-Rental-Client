@@ -8,8 +8,13 @@ import {
 } from '@headlessui/react'
 import { format } from 'date-fns'
 import { Fragment } from 'react'
+import useAuth from '../../hooks/useAuth';
+
 
 const BookingModal = ({ closeModal, isOpen, bookingInfo }) => {
+  console.log(bookingInfo);
+  const {user}=useAuth();
+  
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as='div' className='relative z-10' onClose={closeModal}>
@@ -55,14 +60,14 @@ const BookingModal = ({ closeModal, isOpen, bookingInfo }) => {
                 </div>
                 <div className='mt-2'>
                   <p className='text-sm text-gray-500'>
-                    {/* Guest: {bookingInfo.guest.name} */}
+                    Guest: {user?.displayName}
                   </p>
                 </div>
                 <div className='mt-2'>
-                  {/* <p className='text-sm text-gray-500'>
+                  <p className='text-sm text-gray-500'>
                     From: {format(new Date(bookingInfo.from), 'PP')} - To:{' '}
                     {format(new Date(bookingInfo.to), 'PP')}
-                  </p> */}
+                  </p>
                 </div>
 
                 <div className='mt-2'>
@@ -72,6 +77,10 @@ const BookingModal = ({ closeModal, isOpen, bookingInfo }) => {
                 </div>
                 <hr className='mt-8 ' />
                 {/* checkout form */}
+                <div className='flex justify-between mt-5'>
+                 <button className='px-3 py-2 rounded font-semibold bg-green-100 text-green-600'>Book</button>
+                 <button onClick={closeModal} className='px-3 py-2 rounded font-semibold bg-red-100 text-red-600'>No</button>
+                </div>
               </DialogPanel>
             </TransitionChild>
           </div>

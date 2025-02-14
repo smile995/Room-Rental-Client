@@ -4,7 +4,7 @@ import { GrLogout } from "react-icons/gr";
 import { FcSettings } from "react-icons/fc";
 
 import { BsFingerprint, BsFillHouseAddFill } from "react-icons/bs";
-import { GrUserAdmin } from "react-icons/gr";
+import { GrUserAdmin, GrUserNew } from "react-icons/gr";
 import { MdHomeWork } from "react-icons/md";
 import { AiOutlineBars } from "react-icons/ai";
 import { BsGraphUp } from "react-icons/bs";
@@ -14,17 +14,56 @@ import { Link } from "react-router-dom";
 import MenuItem from "../../Shared/Navlink/MenuItem";
 import useRole from "../../../hooks/useRole";
 import ToggleBtn from "../../../pages/Dashboard/Admin/Component/ToggleBtn";
+import Swal from "sweetalert2";
+import useAxiosPublic from "../../../hooks/useAxiosPublic";
 
 const Sidebar = () => {
-  const { logOut,user } = useAuth();
+  const { logOut, user } = useAuth();
   const [isActive, setActive] = useState(false);
   const [role] = useRole();
-
-
+const axiosPublc= useAxiosPublic();
   // Sidebar Responsive Handler
   const handleToggle = () => {
     setActive(!isActive);
   };
+
+   const handleBeAHost = () => {
+      const userInfo = {
+        name: user?.displayName,
+        email: user?.email,
+        role: "guest",
+        image: user?.photoURL,
+        timeStamp: Date.now(),
+        status: "Requested",
+      };
+  
+      Swal.fire({
+        title: "Are you sure?",
+        text: "Do you want to a host?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, Request",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const { data } = await axiosPublc.put("/users", userInfo);
+          if (data?.modifiedCount > 0) {
+            Swal.fire({
+              title: "Request success",
+              text: "Please wait for admin approval",
+              icon: "success",
+            });
+          } else {
+            Swal.fire({
+              title: "Request on pending",
+              text: "Please wait for admin approval",
+              icon: "warning",
+            });
+          }
+        }
+      });
+    };
   return (
     <>
       {/* Small Screen Navbar */}
@@ -85,7 +124,17 @@ const Sidebar = () => {
                     text="Statistics"
                     to="/dashboard"
                   />
-               <h1>become a host</h1>
+                  <MenuItem
+                    icon={BsGraphUp}
+                    text="My Bookings"
+                    to="my-bookings"
+                  />
+                  <button onClick={handleBeAHost} className="w-full">
+                    <MenuItem
+                      icon={GrUserNew}
+                      text="Become a Host"
+                    />
+                  </button>
                 </>
               )}
               {role === "host" ? (
@@ -100,6 +149,11 @@ const Sidebar = () => {
                       icon={BsFillHouseAddFill}
                       text="Add Room"
                       to="add-room"
+                    />
+                    <MenuItem
+                      icon={BsFillHouseAddFill}
+                      text="Manage Bookings"
+                      to="manage-bookings"
                     />
 
                     <MenuItem

@@ -66,7 +66,7 @@ const RoomReservation = ({ room }) => {
         onClick={()=>setOpen(true)}
         label={"Reserve"} />
       </div>
-      <BookingModal isOpen={isOpen} closeModal={closeModal} bookingInfo={room} />
+      <BookingModal isOpen={isOpen} closeModal={closeModal} bookingInfo={{...room,price:totalPrice}} />
       <hr />
       <div className="p-4 flex items-center justify-between font-semibold text-lg">
         <div>Total</div>
