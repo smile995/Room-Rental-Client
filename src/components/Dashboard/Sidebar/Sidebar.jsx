@@ -2,7 +2,8 @@
 import { useState } from "react";
 import { GrLogout } from "react-icons/gr";
 import { FcSettings } from "react-icons/fc";
-
+import { MdManageHistory } from "react-icons/md";
+import { MdOutlineSettingsInputComposite } from "react-icons/md";
 import { BsFingerprint, BsFillHouseAddFill } from "react-icons/bs";
 import { GrUserAdmin, GrUserNew } from "react-icons/gr";
 import { MdHomeWork } from "react-icons/md";
@@ -125,15 +126,16 @@ const axiosPublc= useAxiosPublic();
                     to="/dashboard"
                   />
                   <MenuItem
-                    icon={BsGraphUp}
+                    icon={MdOutlineSettingsInputComposite}
                     text="My Bookings"
                     to="my-bookings"
                   />
-                  <button onClick={handleBeAHost} className="w-full">
-                    <MenuItem
+                  <button onClick={handleBeAHost} className="w-full flex item-center gap-3 px-4 font-medium">
+                    {/* <MenuItem
                       icon={GrUserNew}
                       text="Become a Host"
-                    />
+                    /> */}
+                    <GrUserNew className="w-5 h-5"/> Become a Host
                   </button>
                 </>
               )}
@@ -151,7 +153,7 @@ const axiosPublc= useAxiosPublic();
                       to="add-room"
                     />
                     <MenuItem
-                      icon={BsFillHouseAddFill}
+                      icon={MdManageHistory}
                       text="Manage Bookings"
                       to="manage-bookings"
                     />
