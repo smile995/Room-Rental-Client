@@ -1,6 +1,8 @@
+/* eslint-disable no-unused-vars */
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
+import toast from "react-hot-toast"
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import useAuth from "../../hooks/useAuth";
 const CheckoutForm = ({ closeModal, bookingInfo }) => {
@@ -47,6 +49,7 @@ const CheckoutForm = ({ closeModal, bookingInfo }) => {
                card:card,
                billing_details: {
                  name: user?.displayName,
+                 email: user?.email,
                },
              },
       });
@@ -57,8 +60,18 @@ const CheckoutForm = ({ closeModal, bookingInfo }) => {
       setMessage(confirmError.message);
       setLoading(false)
     } else if (paymentIntent.status === "succeeded") {
+     toast.success("Payment successfull")
+     const bookedInfo={
+          ...bookingInfo,
+          transectionId:paymentIntent.id,
+          bookingDate: new Date(),
+          bookingId:bookingInfo._id,
+          customerName:user?.displayName,
+          customerEmail:user?.email,
+     }
+     delete bookingInfo._id
      closeModal()
-      setMessage("Payment Successful!");
+     
     }
 
     setLoading(false);
