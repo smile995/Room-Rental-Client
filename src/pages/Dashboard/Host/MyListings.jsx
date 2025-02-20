@@ -17,6 +17,8 @@ const MyListings = () => {
       return data;
     },
   });
+  console.log(datas);
+  
   if(datas?.length===0){
     return <EmptyState message={"Your have no room"} address="/dashboard/add-room" label={"Add Room"} />
   }
@@ -109,7 +111,7 @@ const MyListings = () => {
                             <div className="block relative">
                               <img
                                 alt="profile"
-                                src={data?.image}
+                                src={data?.image }
                                 className="mx-auto object-cover rounded h-10 w-15 "
                               />
                             </div>

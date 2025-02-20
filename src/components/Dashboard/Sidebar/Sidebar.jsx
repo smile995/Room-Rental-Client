@@ -22,49 +22,50 @@ const Sidebar = () => {
   const { logOut, user } = useAuth();
   const [isActive, setActive] = useState(false);
   const [role] = useRole();
-const axiosPublc= useAxiosPublic();
+  const axiosPublc = useAxiosPublic();
+
   // Sidebar Responsive Handler
   const handleToggle = () => {
     setActive(!isActive);
   };
 
-   const handleBeAHost = () => {
-      const userInfo = {
-        name: user?.displayName,
-        email: user?.email,
-        role: "guest",
-        image: user?.photoURL,
-        timeStamp: Date.now(),
-        status: "Requested",
-      };
-  
-      Swal.fire({
-        title: "Are you sure?",
-        text: "Do you want to a host?",
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, Request",
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          const { data } = await axiosPublc.put("/users", userInfo);
-          if (data?.modifiedCount > 0) {
-            Swal.fire({
-              title: "Request success",
-              text: "Please wait for admin approval",
-              icon: "success",
-            });
-          } else {
-            Swal.fire({
-              title: "Request on pending",
-              text: "Please wait for admin approval",
-              icon: "warning",
-            });
-          }
-        }
-      });
+  const handleBeAHost = () => {
+    const userInfo = {
+      name: user?.displayName,
+      email: user?.email,
+      role: "guest",
+      image: user?.photoURL,
+      timeStamp: Date.now(),
+      status: "Requested",
     };
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to a host?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Request",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const { data } = await axiosPublc.put("/users", userInfo);
+        if (data?.modifiedCount > 0) {
+          Swal.fire({
+            title: "Request success",
+            text: "Please wait for admin approval",
+            icon: "success",
+          });
+        } else {
+          Swal.fire({
+            title: "Request on pending",
+            text: "Please wait for admin approval",
+            icon: "warning",
+          });
+        }
+      }
+    });
+  };
   return (
     <>
       {/* Small Screen Navbar */}
@@ -115,7 +116,7 @@ const axiosPublc= useAxiosPublic();
           {/* Nav Items */}
           <div className="flex flex-col justify-between flex-1 mt-6">
             {/* Conditional toggle button here.. */}
-            <ToggleBtn toggleHandler={handleToggle} />
+            {role === "host" && <ToggleBtn toggleHandler={handleToggle} />}
             {/*  Menu Items */}
             <nav>
               {role === "guest" && (
@@ -130,12 +131,15 @@ const axiosPublc= useAxiosPublic();
                     text="My Bookings"
                     to="my-bookings"
                   />
-                  <button onClick={handleBeAHost} className="w-full flex item-center gap-3 px-4 font-medium">
+                  <button
+                    onClick={handleBeAHost}
+                    className="w-full flex item-center gap-3 px-4 font-medium"
+                  >
                     {/* <MenuItem
                       icon={GrUserNew}
                       text="Become a Host"
                     /> */}
-                    <GrUserNew className="w-5 h-5"/> Become a Host
+                    <GrUserNew className="w-5 h-5" /> Become a Host
                   </button>
                 </>
               )}

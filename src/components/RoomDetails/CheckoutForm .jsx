@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import toast from "react-hot-toast";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import useAuth from "../../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 const CheckoutForm = ({ closeModal, bookingInfo,refetch }) => {
   const { price } = bookingInfo;
   const { user } = useAuth();
@@ -19,7 +20,7 @@ const CheckoutForm = ({ closeModal, bookingInfo,refetch }) => {
       setClientSecret(res?.data?.paymentIntent);
     });
   }, [axiosSecure, price]);
-
+const navigate= useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -77,6 +78,7 @@ const CheckoutForm = ({ closeModal, bookingInfo,refetch }) => {
       await axiosSecure.post("/bookings", bookedInfo);
       refetch()
       closeModal();
+      navigate("/dashboard/my-bookings")
     }
 
     setLoading(false);
