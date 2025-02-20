@@ -3,18 +3,52 @@ import { Helmet } from "react-helmet-async";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import useAuth from "../../../hooks/useAuth";
 import { format } from "date-fns";
-
+import toast from "react-hot-toast";
+import Swal from 'sweetalert2'
+import LoadingSpinner from "../../../components/Shared/LoadingSpinner";
+import EmptyState from "../../../components/Shared/EmptyState";
 const MyBookings = () => {
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
-  const { data: datas, refetch } = useQuery({
+  const { data: datas, refetch,isLoading } = useQuery({
     queryKey: ["my-listing", user?.email],
     queryFn: async () => {
       const { data } = await axiosSecure.get(`/my-booking/${user?.email}`);
       return data;
     },
   });
+ if (isLoading) {
+  return <LoadingSpinner/>
+ }
+ else if(!datas?.length){
+  return <EmptyState address={"/"} label={"Go Home"} message={"You have no booking available"} />
+ }
+  const handleMyBooking = async (id, roomId) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You want to cancel the booking!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Cancel!",
+    }).then(async(result) => {
+      if (result.isConfirmed) {
+        const { data } = await axiosSecure.post(`/manage/my-bookings/${id}`, {
+          roomId,
+        });
+        if (
+          data?.deleteBooking?.deletedCount > 0 &&
+          data?.updateRoomAvailable?.modifiedCount > 0
+        ) {
+          refetch();
+          toast.success("Your booking cencel successfully")
+        }
+      }
+    });
 
+   
+  };
   return (
     <>
       <Helmet>
@@ -67,8 +101,8 @@ const MyBookings = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {datas?.map((data,idx) => (
-                    <tr key={data._id ||idx}>
+                  {datas?.map((data, idx) => (
+                    <tr key={data._id || idx}>
                       <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                         <div className="flex items-center">
                           <div className="flex-shrink-0">
@@ -121,13 +155,18 @@ const MyBookings = () => {
                         </p>
                       </td>
                       <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                        <span className="relative cursor-pointer inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                        <button
+                          onClick={() =>
+                            handleMyBooking(data?._id, data.roomId)
+                          }
+                          className="relative cursor-pointer inline-block px-3 py-1 font-semibold text-green-900 leading-tight"
+                        >
                           <span
                             aria-hidden="true"
                             className="absolute inset-0 bg-red-200 opacity-50 rounded-full"
                           ></span>
                           <span className="relative">Cancel</span>
-                        </span>
+                        </button>
                       </td>
                     </tr>
                   ))}
