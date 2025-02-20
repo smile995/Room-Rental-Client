@@ -5,7 +5,7 @@ import { DateRange } from "react-date-range";
 import { differenceInDays } from "date-fns";
 import BookingModal from "./BookingModal";
 
-const RoomReservation = ({ room }) => {
+const RoomReservation = ({ room,refetch }) => {
   const { from, to } = room || {};
   const startDate = new Date(from);
   const endDate = new Date(to);
@@ -62,9 +62,12 @@ const RoomReservation = ({ room }) => {
       </div>
       <hr />
       <div className="p-4">
-        <Button onClick={() => setOpen(true)} label={"Reserve"} />
+
+        
+        <Button disabled={room?.isBooked} onClick={() => setOpen(true)} label={"Reserve"} />
       </div>
       <BookingModal
+      refetch={refetch}
         isOpen={isOpen}
         closeModal={closeModal}
         bookingInfo={{ ...room, price: totalPrice }}
@@ -80,6 +83,7 @@ const RoomReservation = ({ room }) => {
 
 RoomReservation.propTypes = {
   room: PropTypes.object,
+  refetch:PropTypes.func
 };
 
 export default RoomReservation;

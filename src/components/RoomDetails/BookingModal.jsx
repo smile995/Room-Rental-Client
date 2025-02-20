@@ -13,7 +13,7 @@ import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import CheckoutForm from "./CheckoutForm ";
 const stripePromise = loadStripe(import.meta.env.VITE_PK);
-const BookingModal = ({ closeModal, isOpen, bookingInfo }) => {
+const BookingModal = ({ closeModal, isOpen, bookingInfo,refetch }) => {
   const { user } = useAuth();
 
   return (
@@ -86,7 +86,7 @@ const BookingModal = ({ closeModal, isOpen, bookingInfo }) => {
                 {/* checkout form */}
                 <div className="my-4">
                   <Elements stripe={stripePromise}>
-                    <CheckoutForm closeModal={closeModal} bookingInfo={bookingInfo} />
+                    <CheckoutForm refetch={refetch} closeModal={closeModal} bookingInfo={bookingInfo} />
                   </Elements>
                 </div>
                
@@ -102,6 +102,7 @@ const BookingModal = ({ closeModal, isOpen, bookingInfo }) => {
 BookingModal.propTypes = {
   bookingInfo: PropTypes.object,
   closeModal: PropTypes.func,
+  refetch: PropTypes.func,
   isOpen: PropTypes.bool,
 };
 

@@ -9,7 +9,7 @@ import useAxiosPublic from "../../hooks/useAxiosPublic";
 const RoomDetails = () => {
   const axiosPublic = useAxiosPublic();
   const { id } = useParams();
-  const { data: room = {} } = useQuery({
+  const { data: room = {},refetch } = useQuery({
     queryKey: ["room", id],
     queryFn: async () => {
       const { data } = await axiosPublic.get(`/room/${id}`);
@@ -88,7 +88,7 @@ const RoomDetails = () => {
 
             <div className="md:col-span-3 order-first md:order-last mb-10">
               {/* RoomReservation */}
-              <RoomReservation room={room} />
+              <RoomReservation room={room} refetch={refetch} />
             </div>
           </div>
         </div>

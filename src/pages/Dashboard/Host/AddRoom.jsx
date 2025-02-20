@@ -76,6 +76,7 @@ const AddRoom = () => {
         from,
         host,
         image,
+        isBooked:false
       };
       await mutateAsync(RoomInfo);
     } catch (error) {
