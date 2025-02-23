@@ -47,6 +47,7 @@ const AuthProvider = ({ children }) => {
     await axios.get(`${import.meta.env.VITE_ROOT}/logout`, {
       withCredentials: true,
     });
+    setLoading(false);
     return signOut(auth);
   };
 
