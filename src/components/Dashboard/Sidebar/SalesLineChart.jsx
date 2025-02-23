@@ -1,13 +1,5 @@
 import { Chart } from 'react-google-charts'
 
-//  const data = [
-//   ['Day', 'Sales'],
-//   ['9', 1000],
-//   ['10', 1170],
-//   ['11', 660],
-//   ['12', 1030],
-// ]
-
 const options = {
   title: 'Sales Over Time',
   curveType: 'function',
