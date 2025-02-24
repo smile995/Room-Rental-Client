@@ -8,8 +8,10 @@ import { format } from "date-fns";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 
+
 const ManageBookings = () => {
   const axiosSecure = useAxiosSecure();
+
   const { user } = useAuth();
   const {
     data: bookeds,

@@ -7,9 +7,11 @@ import { useQuery } from "@tanstack/react-query";
 import useAuth from "../../../hooks/useAuth";
 import Swal from "sweetalert2";
 import EmptyState from "../../../components/Shared/EmptyState";
+import UpdateRoomModal from "../../../components/Modal/UpdateRoomModal";
 const MyListings = () => {
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
   const { data: datas, refetch } = useQuery({
     queryKey: ["my-listing", user?.email],
     queryFn: async () => {
@@ -17,10 +19,15 @@ const MyListings = () => {
       return data;
     },
   });
-  console.log(datas);
-  
-  if(datas?.length===0){
-    return <EmptyState message={"Your have no room"} address="/dashboard/add-room" label={"Add Room"} />
+
+  if (datas?.length === 0) {
+    return (
+      <EmptyState
+        message={"Your have no room"}
+        address="/dashboard/add-room"
+        label={"Add Room"}
+      />
+    );
   }
   const handleDeleteRoom = (id) => {
     Swal.fire({
@@ -33,7 +40,7 @@ const MyListings = () => {
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        const { data } = await axiosSecure.delete(`/rooms/${id}`); 
+        const { data } = await axiosSecure.delete(`/rooms/${id}`);
         if (data?.deletedCount > 0) {
           refetch();
           Swal.fire({
@@ -111,7 +118,7 @@ const MyListings = () => {
                             <div className="block relative">
                               <img
                                 alt="profile"
-                                src={data?.image }
+                                src={data?.image}
                                 className="mx-auto object-cover rounded h-10 w-15 "
                               />
                             </div>
@@ -159,14 +166,21 @@ const MyListings = () => {
                         </span>
                       </td>
                       <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                        <span className="relative cursor-pointer inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                        <button
+                          onClick={() => setIsOpen(true)}
+                          className="relative cursor-pointer inline-block px-3 py-1 font-semibold text-green-900 leading-tight"
+                        >
                           <span
                             aria-hidden="true"
                             className="absolute inset-0 bg-green-200 opacity-50 rounded-full"
                           ></span>
                           <span className="relative">Update</span>
-                        </span>
+                        </button>
                         {/* Update Modal */}
+                        <UpdateRoomModal
+                          isOpen={isOpen}
+                          setIsEditModalOpen={setIsOpen}
+                        />
                       </td>
                     </tr>
                   ))}
