@@ -2,8 +2,21 @@ import { Calendar } from 'react-date-range'
 import { FaDollarSign } from 'react-icons/fa'
 import { BsFillCartPlusFill, BsFillHouseDoorFill } from 'react-icons/bs'
 import { GiPlayerTime } from 'react-icons/gi'
+import { useQuery } from '@tanstack/react-query'
+import { axiosSecure } from '../../../hooks/useAxiosSecure'
+import SalesLineChart from '../../../components/Dashboard/Sidebar/SalesLineChart'
 
 const HostStatistics = () => {
+
+  const { data: stat,isLoading } = useQuery({
+    queryKey: ["host-stat",],
+    queryFn: async () => {
+      const { data } = await axiosSecure.get(`/host-stat`);
+      return data;
+    },
+  });
+
+  
   return (
     <div>
       <div className='mt-12'>
@@ -21,7 +34,7 @@ const HostStatistics = () => {
                 Total Sales
               </p>
               <h4 className='block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900'>
-                $45
+                ${stat?.totalPrice}
               </h4>
             </div>
           </div>
@@ -38,7 +51,7 @@ const HostStatistics = () => {
                 Total Bookings
               </p>
               <h4 className='block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900'>
-                56
+                {stat?.totalBookings}
               </h4>
             </div>
           </div>
@@ -54,7 +67,7 @@ const HostStatistics = () => {
                 Total Rooms
               </p>
               <h4 className='block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900'>
-                435
+                {stat?.totalRooms}
               </h4>
             </div>
           </div>
@@ -71,7 +84,7 @@ const HostStatistics = () => {
                 Host Since...
               </p>
               <h4 className='block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900'>
-                3 Days
+                {stat?.daysAgo} Days
               </h4>
             </div>
           </div>
@@ -81,6 +94,7 @@ const HostStatistics = () => {
           {/* Total Sales Graph */}
           <div className='relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md overflow-hidden xl:col-span-2'>
             {/* Render Chart Here */}
+            <SalesLineChart isLoading={isLoading} data={stat?.chartData} />
           </div>
           {/* Calender */}
           <div className='relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md overflow-hidden'>

@@ -9,10 +9,10 @@ import SalesLineChart from "../../../components/Dashboard/Sidebar/SalesLineChart
 
 const GuestStatistics = () => {
   const { user } = useAuth();
-  const { data: stat } = useQuery({
+  const { data: stat,isLoading } = useQuery({
     queryKey: ["Guest-stat", user?.email],
     queryFn: async () => {
-      const { data } = await axiosSecure.get(`/guest-stat/${user?.email}`);
+      const { data } = await axiosSecure.get(`/guest-stat`);
       return data;
     },
   });
@@ -78,7 +78,7 @@ const GuestStatistics = () => {
           {/* Total Sales Graph */}
           <div className="relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md overflow-hidden xl:col-span-2">
             {/* Render Chart Here */}
-            <SalesLineChart data={stat?.chartData} />
+            <SalesLineChart data={stat?.chartData} isLoading={isLoading} />
           </div>
           {/* Calender */}
           <div className="relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md overflow-hidden">
