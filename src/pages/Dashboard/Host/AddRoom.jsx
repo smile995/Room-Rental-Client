@@ -80,9 +80,9 @@ const AddRoom = () => {
       };
       await mutateAsync(RoomInfo);
     } catch (error) {
-      // toast.error(error.message)
+      toast.error(error.message)
       setLoading(false);
-      console.log(error);
+
     }
   };
 

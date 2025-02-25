@@ -1,33 +1,55 @@
 import { DateRange } from "react-date-range";
 import { categories } from "../../../components/Categories/CategoriesData";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useAuth from "../../../hooks/useAuth";
 import UploadImage from "../../../Utils/UploadImage";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { useNavigate, useParams,  } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ImSpinner3 } from "react-icons/im";
 const UpdateRoom = () => {
   const [loading, setLoading] = useState(false);
-  const {id}= useParams();
+  const { id } = useParams();
+
   const navigate = useNavigate();
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
   const [preview, setPreview] = useState();
-  const [state, setState] = useState([
-    {
-      startDate: new Date(),
-      endDate: null,
-      key: "selection",
+  const { data: room = {}, refetch } = useQuery({
+    queryKey: ["room", id],
+    queryFn: async () => {
+      const { data } = await axiosSecure.get(`/room/${id}`);
+      return data;
     },
-  ]);
+  });
+const {from,to}= room
+  const [state, setState] = useState([
+     {
+       startDate: new Date(from),
+       endDate: new Date(to),
+       key: "selection",
+     },
+   ]);
+   console.log(state);
+   
+   useEffect(() => {
+     if (from && to) {
+       setState([
+         {
+           startDate: new Date(from),
+           endDate: new Date(to),
+           key: "selection",
+         },
+       ]);
+     }
+   }, [from, to]);
   const handleChange = (e) => {
     setPreview(URL.createObjectURL(e.target.files[0]));
   };
   const { mutateAsync } = useMutation({
     mutationFn: async (room) => {
-      const result = await axiosSecure.patch("/rooms", room);
+      const result = await axiosSecure.patch(`/rooms/${id}`, room);
       return result.data;
     },
     onSuccess: () => {
@@ -76,7 +98,7 @@ const UpdateRoom = () => {
         from,
         host,
         image,
-        isBooked:false
+        isBooked: false,
       };
       await mutateAsync(RoomInfo);
     } catch (error) {
@@ -93,12 +115,13 @@ const UpdateRoom = () => {
           <div className="space-y-6">
             <div className="space-y-1 text-sm">
               <label htmlFor="location" className="block text-gray-600">
-                Location 
+                Location
               </label>
               <input
                 className="w-full px-4 py-3 text-gray-800 border border-rose-300 focus:outline-rose-500 rounded-md "
                 name="location"
                 id="location"
+                defaultValue={room?.location}
                 type="text"
                 placeholder="Location"
                 required
@@ -111,11 +134,12 @@ const UpdateRoom = () => {
               </label>
               <select
                 required
+                defaultValue={room?.category}
                 className="w-full px-4 py-3 border-rose-300 focus:outline-rose-500 rounded-md"
                 name="category"
               >
                 {categories?.map((category) => (
-                  <option value={category.label} key={category.label}>
+                  <option selected={room?.category} value={category.label} key={category.label}>
                     {category.label}
                   </option>
                 ))}
@@ -145,6 +169,7 @@ const UpdateRoom = () => {
                 name="title"
                 id="title"
                 type="text"
+                defaultValue={room?.title}
                 placeholder="Title"
                 required
               />
@@ -168,9 +193,9 @@ const UpdateRoom = () => {
                         Upload Image
                       </div>
                       <div>
-                        {preview && (
-                          <img className="w-16 h-1w-16" src={preview} />
-                        )}
+                        {preview ? (
+                          <img className="w-16 h-1w-16" src={preview}  />
+                        ):<img className="w-16 h-1w-16" src={room?.image}  />}
                       </div>
                     </div>
                   </label>
@@ -186,6 +211,7 @@ const UpdateRoom = () => {
                   className="w-full px-4 py-3 text-gray-800 border border-rose-300 focus:outline-rose-500 rounded-md "
                   name="price"
                   id="price"
+                  defaultValue={room?.price}
                   type="number"
                   placeholder="Price"
                   required
@@ -200,6 +226,7 @@ const UpdateRoom = () => {
                   className="w-full px-4 py-3 text-gray-800 border border-rose-300 focus:outline-rose-500 rounded-md "
                   name="total_guest"
                   id="guest"
+                  defaultValue={room?.guests}
                   type="number"
                   placeholder="Total guest"
                   required
@@ -216,6 +243,7 @@ const UpdateRoom = () => {
                   className="w-full px-4 py-3 text-gray-800 border border-rose-300 focus:outline-rose-500 rounded-md "
                   name="bedrooms"
                   id="bedrooms"
+                  defaultValue={room?.bedrooms}
                   type="number"
                   placeholder="Bedrooms"
                   required
@@ -231,6 +259,7 @@ const UpdateRoom = () => {
                   name="bathrooms"
                   id="bathrooms"
                   type="number"
+                  defaultValue={room?.bathrooms}
                   placeholder="Bathrooms"
                   required
                 />
@@ -244,6 +273,7 @@ const UpdateRoom = () => {
 
               <textarea
                 id="description"
+                defaultValue={room?.description}
                 className="block rounded-md focus:rose-300 w-full h-32 px-4 py-3 text-gray-800  border border-rose-300 focus:outline-rose-500 "
                 name="description"
               ></textarea>
@@ -258,7 +288,7 @@ const UpdateRoom = () => {
           {loading ? (
             <ImSpinner3 className="animate-spin mx-auto" />
           ) : (
-            "Save & Continue"
+            "Update & Continue"
           )}
         </button>
       </form>
