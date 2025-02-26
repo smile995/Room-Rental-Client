@@ -22,8 +22,7 @@ const UpdateRoom = () => {
       return data;
     },
   });
-  const [updateRoom, setUpdateRoom] = useState(room);
-  console.log(updateRoom);
+ 
 
   const { from, to } = room;
   const [state, setState] = useState([
