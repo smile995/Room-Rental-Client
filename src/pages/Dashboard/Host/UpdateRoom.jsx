@@ -11,7 +11,6 @@ import { ImSpinner3 } from "react-icons/im";
 const UpdateRoom = () => {
   const [loading, setLoading] = useState(false);
   const { id } = useParams();
-
   const navigate = useNavigate();
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
@@ -23,46 +22,49 @@ const UpdateRoom = () => {
       return data;
     },
   });
-const {from,to}= room
+  const [updateRoom, setUpdateRoom] = useState(room);
+  console.log(updateRoom);
+
+  const { from, to } = room;
   const [state, setState] = useState([
-     {
-       startDate: new Date(from),
-       endDate: new Date(to),
-       key: "selection",
-     },
-   ]);
-   console.log(state);
-   
-   useEffect(() => {
-     if (from && to) {
-       setState([
-         {
-           startDate: new Date(from),
-           endDate: new Date(to),
-           key: "selection",
-         },
-       ]);
-     }
-   }, [from, to]);
+    {
+      startDate: new Date(from),
+      endDate: new Date(to),
+      key: "selection",
+    },
+  ]);
+
+  useEffect(() => {
+    if (from && to) {
+      setState([
+        {
+          startDate: new Date(from),
+          endDate: new Date(to),
+          key: "selection",
+        },
+      ]);
+    }
+  }, [from, to]);
   const handleChange = (e) => {
     setPreview(URL.createObjectURL(e.target.files[0]));
   };
   const { mutateAsync } = useMutation({
-    mutationFn: async (room) => {
-      const result = await axiosSecure.patch(`/rooms/${id}`, room);
+    mutationFn: async (updateData) => {
+      const result = await axiosSecure.patch(`/rooms/${id}`, updateData);
       return result.data;
     },
     onSuccess: () => {
-      toast.success("Room Added successfully");
+      toast.success("Room Updated successfully");
       navigate("/dashboard/my-listings");
       setLoading(false);
+      refetch();
     },
     onError: (error) => {
       toast.error(error.message);
       setLoading(false);
     },
   });
-  const handleAddRoomDetails = async (e) => {
+  const handleUpdateroomDetails = async (e) => {
     setLoading(true);
     e.preventDefault();
     const form = e.target;
@@ -84,7 +86,12 @@ const {from,to}= room
     };
 
     try {
-      const image = await UploadImage(imageFile);
+      let image=room?.image
+      if (imageFile) {
+         image = await UploadImage(imageFile);
+      }
+     
+      // const image = await UploadImage(imageFile);
       const RoomInfo = {
         location,
         title,
@@ -102,7 +109,7 @@ const {from,to}= room
       };
       await mutateAsync(RoomInfo);
     } catch (error) {
-      // toast.error(error.message)
+      toast.error(error.message);
       setLoading(false);
       console.log(error);
     }
@@ -110,7 +117,7 @@ const {from,to}= room
 
   return (
     <div className="w-full min-h-[calc(100vh-40px)] flex flex-col justify-center items-center text-gray-800 rounded-xl bg-gray-50">
-      <form onSubmit={handleAddRoomDetails}>
+      <form onSubmit={handleUpdateroomDetails}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           <div className="space-y-6">
             <div className="space-y-1 text-sm">
@@ -139,7 +146,11 @@ const {from,to}= room
                 name="category"
               >
                 {categories?.map((category) => (
-                  <option selected={room?.category} value={category.label} key={category.label}>
+                  <option
+                    selected={room?.category}
+                    value={category.label}
+                    key={category.label}
+                  >
                     {category.label}
                   </option>
                 ))}
@@ -194,8 +205,10 @@ const {from,to}= room
                       </div>
                       <div>
                         {preview ? (
-                          <img className="w-16 h-1w-16" src={preview}  />
-                        ):<img className="w-16 h-1w-16" src={room?.image}  />}
+                          <img className="w-16 h-1w-16" src={preview} />
+                        ) : (
+                          <img className="w-16 h-1w-16" src={room?.image} />
+                        )}
                       </div>
                     </div>
                   </label>
